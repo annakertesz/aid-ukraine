@@ -32,7 +32,7 @@ create table person
             primary key,
     name           varchar,
     email          varchar,
-    phone          integer,
+    phone          varchar,
     night_call     boolean,
     status         integer not null
         constraint person_status_id_fk

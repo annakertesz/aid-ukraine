@@ -1,0 +1,632 @@
+swagger: "2.0"
+info:
+  description: "Migration aid database and searcher for the Ukrain refugees."
+  version: "1.0.0"
+  title: "aid-ukraine"
+host: "aid-ukraine.herokuapp.com"
+basePath: "/v1"
+tags:
+- name: "accomodation"
+  description: "Accomodation manager"
+- name: "transport"
+  description: "Trasportation manager"
+- name: "people"
+  description: "Operations about voluneers"
+schemes:
+- "https"
+- "http"
+paths:
+  /accomodation:
+    post:
+      tags:
+      - "accomodation"
+      summary: "Add new accomodation"
+      description: ""
+      operationId: "addAccomodation"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Accomodation object that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/Accomodation"
+      responses:
+        "405":
+          description: "Invalid input"
+        "201":
+          description: "Created"
+    put:
+      tags:
+      - "accomodation"
+      summary: "Update an existing accomodation"
+      description: ""
+      operationId: "updateAccomodation"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Accomodation object that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/Accomodation"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Accomodation not found"
+        "405":
+          description: "Validation exception"
+        "202":
+          description: "Accepted"
+    get:
+      tags:
+      - "accomodation"
+      summary: "List all accomodation"
+      description: "Return every available and non-available accomodation of the db"
+      operationId: "listAllAccomodation"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Accomodation"
+        "400":
+          description: "Invalid status value"
+  /accomodation/findByStatus:
+    get:
+      tags:
+      - "accomodation"
+      summary: "Finds Accomodations by status"
+      description: "Multiple status values can be provided with comma separated strings"
+      operationId: "findAccomodationsByStatus"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "available"
+          - "pending"
+          - "toDelete"
+          - "needClarification"
+          default: "available"
+        collectionFormat: "multi"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Accomodation"
+        "400":
+          description: "Invalid status value"
+  /accomodation/filter:
+    get:
+      tags:
+      - "accomodation"
+      summary: "Filter accomodation"
+      description: "Multiple filter query can be added"
+      operationId: "filterAccomodations"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "city"
+        in: "query"
+        description: "City to filter by"
+        required: false
+        type: "string"
+      - name: "guestNum"
+        in: "query"
+        description: "Number of people to accomodate"
+        required: false
+        type: "integer"
+      - name: "male"
+        in: "query"
+        description: "Are men allowed"
+        required: false
+        type: "integer"
+      - name: "female"
+        in: "query"
+        description: "Are women allowed"
+        required: false
+        type: "integer"
+      - name: "kids"
+        in: "query"
+        description: "Are kids allowed"
+        required: false
+        type: "integer"
+      - name: "animals"
+        in: "query"
+        description: "Are animals allowed"
+        required: false
+        type: "integer"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Accomodation"
+        "400":
+          description: "Invalid tag value"
+  /accomodation/{accomodationId}:
+    get:
+      tags:
+      - "accomodation"
+      summary: "Find accomodation by ID"
+      description: "Returns a single accomodation"
+      operationId: "getAccomodationById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "accomodationId"
+        in: "path"
+        description: "ID of accomodation to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Accomodation"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Accomodation not found"
+    delete:
+      tags:
+      - "accomodation"
+      summary: "Deletes an accomodation"
+      description: ""
+      operationId: "deleteAccomodation"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "accomodationId"
+        in: "path"
+        description: "Accomodation id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Accomodation not found"
+        "200":
+          description: "Accomodation deleted succesfully"
+
+  /transport:
+    post:
+      tags:
+      - "transport"
+      summary: "Add new transportation"
+      description: ""
+      operationId: "addTransportation"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Trasportation object that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/Transportation"
+      responses:
+        "405":
+          description: "Invalid input"
+        "201":
+          description: "Created"
+    put:
+      tags:
+      - "transport"
+      summary: "Update an existing transportation"
+      description: ""
+      operationId: "updateTransportation"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Transportation object that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/Transportation"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Transportation not found"
+        "405":
+          description: "Validation exception"
+        "202":
+          description: "Accepted"
+    get:
+      tags:
+      - "transport"
+      summary: "List all transport"
+      description: "Return every available and non-available transportation of the db"
+      operationId: "listAllTransportation"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Transportation"
+        "400":
+          description: "Invalid status value"
+  /transport/findByStatus:
+    get:
+      tags:
+      - "transport"
+      summary: "Finds Transportations by status"
+      description: "Multiple status values can be provided with comma separated strings"
+      operationId: "findTransportationsByStatus"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "available"
+          - "pending"
+          - "toDelete"
+          - "needClarification"
+          default: "available"
+        collectionFormat: "multi"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Transportation"
+        "400":
+          description: "Invalid status value"
+  /transport/filter:
+    get:
+      tags:
+      - "transport"
+      summary: "Filter transportation"
+      description: "Multiple filter query can be added"
+      operationId: "filterTransportations"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "departure"
+        in: "query"
+        description: "City to filter by"
+        required: false
+        type: "string"
+      - name: "seatsNeeded"
+        in: "query"
+        description: "Number of people to transport"
+        required: false
+        type: "integer"
+      - name: "kids"
+        in: "query"
+        description: "Are kids seat nedded"
+        required: false
+        type: "integer"
+      - name: "animals"
+        in: "query"
+        description: "Are animals allowed"
+        required: false
+        type: "integer"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Transportation"
+        "400":
+          description: "Invalid tag value"
+  /transport/{transportationId}:
+    get:
+      tags:
+      - "transport"
+      summary: "Find transportation by ID"
+      description: "Returns a single transportation"
+      operationId: "getTransportationById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "transportationId"
+        in: "path"
+        description: "ID of transportation to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Transportation"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Transportation not found"
+    delete:
+      tags:
+      - "transport"
+      summary: "Deletes a transportation"
+      description: ""
+      operationId: "deleteTransportation"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "transportationId"
+        in: "path"
+        description: "Transportation id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Transportation not found"
+        "200":
+          description: "Transportation deleted succesfully"
+
+  /people:
+    post:
+      tags:
+      - "people"
+      summary: "Add new person"
+      description: ""
+      operationId: "addPerson"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Person object that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/Person"
+      responses:
+        "405":
+          description: "Invalid input"
+        "201":
+          description: "Created"
+    put:
+      tags:
+      - "people"
+      summary: "Update an existing Person"
+      description: ""
+      operationId: "updatePerson"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Person object that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/Person"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Person not found"
+        "405":
+          description: "Validation exception"
+        "202":
+          description: "Accepted"
+    get:
+      tags:
+      - "people"
+      summary: "List all people"
+      description: "Return every people of the db"
+      operationId: "listAllPeople"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Person"
+        "400":
+          description: "Invalid status value"
+  /people/findByStatus:
+    get:
+      tags:
+      - "people"
+      summary: "Finds people by status"
+      description: "Multiple status values can be provided with comma separated strings"
+      operationId: "findPeopleByStatus"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "available"
+          - "pending"
+          - "toDelete"
+          - "needClarification"
+          default: "available"
+        collectionFormat: "multi"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Person"
+        "400":
+          description: "Invalid status value"
+  /people/{personId}:
+    get:
+      tags:
+      - "people"
+      summary: "Find Person by ID"
+      description: "Returns a single Person"
+      operationId: "getPersonById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "personId"
+        in: "path"
+        description: "ID of Person to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Person"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Person not found"
+    delete:
+      tags:
+      - "people"
+      summary: "Deletes a Person"
+      description: ""
+      operationId: "deletePerson"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "personId"
+        in: "path"
+        description: "Person id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Person not found"
+        "200":
+          description: "Person deleted succesfully"
+
+definitions:
+  Accomodation:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      person:
+        $ref: "#/definitions/Person"
+      city:
+        type: "string"
+      max:
+        type: "integer"
+        format: "int64"
+      male:
+        type: "boolean"
+      female:
+        type: "boolean"
+      kids:
+        type: "boolean"
+      animals:
+        type: "boolean"
+      availableFrom:
+        type: "string"
+        format: "date"
+      transport:
+        type: "boolean"
+      comment:
+        type: "string"
+      status:
+        $ref: "#/definitions/Status"
+      statusComment:
+        type: string
+  Status:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      description:
+        type: "string"
+  Person:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      phone:
+        type: "string"
+      email:
+        type: "string"
+      nightCall:
+        type: "boolean"
+      status:
+        $ref: "#/definitions/Status"
+      statusComment:
+        type: string
+  Transportation:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      person:
+        $ref: "#/definitions/Person"
+      departure:
+        type: "string"
+      seats:
+        type: "integer"
+        format: "int64"
+      kisSeat:
+        type: "boolean"
+      animals:
+        type: "boolean"
+      availableFrom:
+        type: "string"
+        format: "date"
+      comment:
+        type: "string"
+      status:
+        $ref: "#/definitions/Status"
+      statusComment:
+        type: string
