@@ -3,8 +3,25 @@ from flask import Flask, request, jsonify
 from data import queries
 from dotenv import load_dotenv
 
+from model.person import Person, PersonSchema
+from model.status import Status
+
 load_dotenv()
 app = Flask(__name__)
+
+people = [
+  Person(5, "Anna", "ke@sd.ff", "234234", True, Status(1, "active"), "nothing"),
+  Person(2, "Matyi", "fo@sd.ff", "234234", False, Status(1, "active"), "nothing"),
+]
+
+@app.route('/person')
+def get_incomes():
+  schema = PersonSchema(many=True)
+  callables = schema.dump(
+    filter(lambda p: p.night_call == True, people)
+  )
+  return jsonify(callables)
+
 
 @app.route('/api/languages')
 def languages():

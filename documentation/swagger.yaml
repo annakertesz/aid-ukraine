@@ -617,7 +617,7 @@ definitions:
       seats:
         type: "integer"
         format: "int64"
-      kisSeat:
+      kidsSeat:
         type: "boolean"
       animals:
         type: "boolean"
